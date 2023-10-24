@@ -1,0 +1,19 @@
+from collections import deque
+
+priorities = [1, 1, 9, 1, 1, 1]
+location = 0
+answer = 0
+queu = deque()
+for i in range(len(priorities)):
+    queu.append(i)
+
+while queu:
+    now = queu.popleft()
+    print(priorities, queu, answer)
+    if max(priorities) > priorities[now]:
+        queu.append(now)
+    else:
+        answer += 1
+        if now == location:
+            break
+print(answer)
