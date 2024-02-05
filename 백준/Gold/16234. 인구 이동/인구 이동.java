@@ -54,17 +54,10 @@ public class Main  {
 		
 		boolean isMove;
 		int day=0;
+		
 		while(true) {
 			isMove = false;
-			for(int i=0;i<N;i++) {
-				for(int j=0;j<N;j++) {
-					visited[i][j] = false;
-				}
-			}
-
-//			for(int[] lin:map) {
-//				System.out.println(Arrays.toString(lin));
-//			}
+			initVisited();
 			
 			for(int i=0;i<N;i++) {
 				for(int j=0;j<N;j++) {
@@ -82,10 +75,6 @@ public class Main  {
 		
 		System.out.println(day);
 		
-	}
-	
-	public static boolean isUnion(int x,int y,int nx,int ny) {
-		return min <= Math.abs(map[x][y] - map[nx][ny]) && Math.abs(map[x][y] - map[nx][ny]) <= max;
 	}
 	
 	public static boolean findUnion(int px,int py) {
@@ -108,6 +97,7 @@ public class Main  {
 			for(int i=0;i<4;i++) {
 				nx =x+dx[i];
 				ny =y+dy[i];
+				// 각 방향에 대해 경로가 있다면 연합은 모두 같은 연합임
 				if(0<=nx && nx<N && 0<=ny && ny < N && !visited[nx][ny] && isUnion(x,y,nx,ny)) {
 					visited[nx][ny] = true;
 					que.add(new Dot(nx,ny));
@@ -116,21 +106,31 @@ public class Main  {
 			}
 			
 		}
-//		if(px == 2 && py == 2 && !union.isEmpty()) {
-//			union.stream().forEach(a->System.out.printf("%d %d",a[0],a[1]));
-//			System.out.println();
-//		}
+
+		// 연합 크기가 1인경우 연합을 생성하지 못한것
 		if(union.size() == 1)
 			return false;
-		
+
+		// 아닌 경우에는 연합들의 인구수를 이동
 		sum = sum / union.size();
-		
 		
 		for(Dot p:union) {
 			map[p.getX()][p.getY()] = sum;
 		}
 		
 		return true;
+	}
+	
+	public static void initVisited() {
+		for(int i=0;i<N;i++) {
+			for(int j=0;j<N;j++) {
+				visited[i][j] = false;
+			}
+		}
+	}
+	
+	public static boolean isUnion(int x,int y,int nx,int ny) {
+		return min <= Math.abs(map[x][y] - map[nx][ny]) && Math.abs(map[x][y] - map[nx][ny]) <= max;
 	}
 
 }
