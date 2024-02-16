@@ -51,6 +51,7 @@ public class Main {
 		stack = new Stack<>();
 		shootDot = new ArrayList<>();
 		
+		// 입력과 함께 전체 적의 수를 구함
 		for(int i=0;i<N;i++) {
 			stk = new StringTokenizer(br.readLine()," ");
 			for(int j=0;j<M;j++) {
@@ -60,6 +61,7 @@ public class Main {
 			}
 		}
 		
+		// M C 3으로 구할수있는 모든 경우의 수에 대해 궁수를 배치
 		DFS(0,0);
 		
 		System.out.println(ans);
@@ -69,6 +71,7 @@ public class Main {
 	
 	private static void DFS(int depth,int now) {
 		if(depth == 3) {
+			// 궁수를 배치하면 게임을 시작
 			gameStart(new int[] {stack.get(0),stack.get(1),stack.get(2)});
 			return;
 		}
@@ -80,32 +83,34 @@ public class Main {
 		}
 	}
 	
-	private static void printMap() {
-		for(int[] line:map) {
-			for(int num:line) {
-				System.out.print(num);
-			}
-			System.out.println();
-		}
-		
-	}
 	
 	private static void gameStart(int[] archers) {
+		// 궁수를 새로 배치했기 떄문에 map을 초기화
 		map = initMap();
+		
+		// 없엔 모든 적을 저장할 변수
 		int attack=0;
-		for(int time=N-1;0<=time;time--) {
-			// 모든 궁수의 화살발사
+		
+		for(int time=N-1; 0<=time;time--) {
+			// 화살을 쏠 위치를 지정함
 			shootDot.clear();
+			// 모든 궁수가 발사할 화살의 위치를 먼저 구함
 			for(int archerY:archers) {
 				shootDot.add(BFS(time,archerY));
 			}
+			// 해당 위치에 화살을 쏨 화살을 쏘는 위치는 겹칠수 있음
 			enemyAttack();
+			
+			// 현재 열에서 죽이지 못한 적의 숫자를 구함
 			attack += liveEnemy(time);
 		}
+		
+		// 전체 적의수 - 이번 게임에서 맞은수 = 죽인 모든 적의 수
 		ans = Math.max(ans, (maxEnemy-attack));
 	}
 	
-	// 화살 쏠 적을 찾아 왼쪽부터 탐색하는 BFS로 1을 만나면 적을 쏘고 바로 리턴
+	// 화살 쏠 위치를 찾아주는 함수
+	// 화살 쏠 적을 찾아 왼쪽부터 탐색하는 BFS
 	private static Dot BFS(int x,int y) {
 		Queue<Dot> que = new LinkedList<>();
 		boolean[][] visit = new boolean[N][M];
