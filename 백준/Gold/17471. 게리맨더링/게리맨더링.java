@@ -38,15 +38,12 @@ public class Main {
 			stk = new StringTokenizer(br.readLine()," ");
 			int k=Integer.parseInt(stk.nextToken());
 			for(int j=0;j<k;j++) {
-				int e = Integer.parseInt(stk.nextToken());
-				graph[i].add(e);
-				graph[e].add(i);
+				graph[i].add(Integer.parseInt(stk.nextToken()));
 			}
 		}
 
 
-
-		for(int i=1;i<=N/2+1;i++) {
+		for(int i=1;i<=N/2;i++) {
 			Comb(1, 0, i);
 		}
 
@@ -77,8 +74,8 @@ public class Main {
 	
 	private static void Comb(int now,int depth,int R) {
 		if(depth == R) {
-			int b = BFS(1, 0);
 			int a = BFS(0, 1); 
+			int b = BFS(1, 0);
 			
 			if(a != -1 && b != -1)
 				min = Math.min(min, Math.abs(a-b));
@@ -106,9 +103,8 @@ public class Main {
 				break;
 			}
 		}
-    
-        if(start == -1)
-            return -1;
+			if(start == -1)
+			return -1;
 				
 		queue.add(start);
 		separate[start] = other; 
