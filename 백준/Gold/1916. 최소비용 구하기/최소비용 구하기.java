@@ -71,10 +71,11 @@ public class Main {
 			
 			int now = nextVertex(visit,dist);
             
+            // 모든 정점을 방문하지 않았는데, 방문할 정점이 없으면 더 이상 경로탐색 불가 
             if(now == -1)
-				break;
-            
-			visit[now] = true; 
+                break;
+			
+            visit[now] = true; 
 			
 			for(Edge e:graph[now]) {
 				dist[e.getEnd()] = Math.min(dist[e.getEnd()], dist[now]+e.getDist());
