@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -38,9 +37,9 @@ public class Main {
 	}
 	
 	private static void perm(int depth) {
+        // 순열이 만들어지면 게임 ㄱㄱ
 		if(depth == 9) {
 			maxScore = Math.max(maxScore, play());
-			//System.out.println(maxScore);
 			return;
 		}
 		// 4번째 선수는 고정
@@ -61,18 +60,15 @@ public class Main {
 	}
 	
 	private static int play() {
-		//if(p++<1000)
-		//System.out.println("\n\n\n새 게임");
 		int now = 0;
 		int base = 0;
 		int score = 0;
 		
 		for(int inning = 0; inning < N;inning++) {
-			//if(p++<1000)
-			//System.out.println(inning+"이닝\n");
-			
 			int out = 0;
+            // base = 000
 			base = 0;
+            
 			while(out != 3) {
 				int bat = result[inning][order[(now++)%9]];
 				switch (bat) {
@@ -81,9 +77,12 @@ public class Main {
 					break;
 
 				case 1:
+                    // base = 1XX 이면 점수증가
 					if(isHome(base))
 						score++;
+                    // base 를 왼쪽으로 한번밀고, 3자리로 유지
 					base = (base<<1)&7;
+                    // base = 0X1
 					base = base+1;
 					break;
 					
@@ -93,6 +92,7 @@ public class Main {
 							score++;
 						base = (base<<1)&7;
 					}
+                    // base = X10
 					base = base+2;
 					break;
 					
@@ -103,6 +103,7 @@ public class Main {
 							score++;
 						base = (base<<1)&7;
 					}
+                    // base = 100
 					base = base+4;
 					break;
 					
@@ -114,16 +115,11 @@ public class Main {
 						base = (base<<1)&7;
 						base = base+1;
 					}
+                    // base = 000
 					base = 0;
 					break;
 				}
-
-				//if(p++<1000)
-					//System.out.print(now%9+"선수가 "+bat+" 베이스 상태 : "+base+" 점수 : "+score+" | ");
 			}
-
-			//if(p++<1000)
-			//System.out.println("==이닝끝\n");
 		}
 		return score;
 	}
