@@ -20,9 +20,9 @@ public class Main {
         min = Integer.MAX_VALUE;
 
         // i번쨰 용액에 대해 가장 0과 가까운 용액조합을 찾는다.
-        // 혼합결과가 0인 용액보다 더 잘 혼합될수 없으니 break
+        // 혼합결과가 -1,1인 용액보다 더 잘 혼합될수 없으니 break
         for(int i=0;i<N-1;i++)
-            binarySerach(i,i+1,N-1);
+            if(binarySerach(i,i+1,N-1)) break;
 
         System.out.print(f1+" "+f2);
     }
@@ -31,10 +31,13 @@ public class Main {
         while(start <= end) {
             int mid = (start+end)/2;
             int mix = fluids[now] + fluids[mid];
+            int mixAbs = Math.abs(mix);
+            
+            if(mix == 1 && mix == -1)
+                return true;
 
-
-            if(Math.abs(mix) < min){  // 0과 더 가깝게 만드는 조합을 찾으면 갱신
-                min = Math.abs(mix);
+            if(mixAbs < min){  // 0과 더 가깝게 만드는 조합을 찾으면 갱신
+                min = mixAbs;
                 f1 = fluids[now];
                 f2 = fluids[mid];
             }
@@ -42,7 +45,7 @@ public class Main {
             if(mix < 0) // 혼합값이 음수이면 더 큰 양수를 섞어야 0에 가깝게 만들수 있음
                 start = mid + 1;
 
-            else // 혼합값이 양수이면 더 큰 음수를 섞어야 0에 가깝게 만들수 있음
+            else// 혼합값이 양수이면 더 큰 음수를 섞어야 0에 가깝게 만들수 있음
                 end = mid - 1;
         }
 
