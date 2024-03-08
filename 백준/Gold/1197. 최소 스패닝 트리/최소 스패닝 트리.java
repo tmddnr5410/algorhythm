@@ -17,7 +17,6 @@ class Edge implements Comparable<Edge>{
 
 	@Override
 	public int compareTo(Edge o) {
-		// TODO Auto-generated method stub
 		return Integer.compare(this.weight,o.weight);
 	}
 	
@@ -35,6 +34,7 @@ public class Main {
 		E = Integer.parseInt(stk.nextToken());
 	
 		parent = new int[V+1];
+		
 		for(int i=1;i<=V;i++)
 			parent[i] = i;
 		
@@ -51,12 +51,8 @@ public class Main {
 		while(cnt < V-1) {
 			Edge now = edges.poll();
 			
-			int startRoot = findParents(now.start);
-			int endRoot = findParents(now.end);
-			
-			if(startRoot == endRoot) continue; // cycle이 생기는 간선은 추가하지 않음
-			
-			union(startRoot,endRoot);
+			if(!union(now.start,now.end)) continue; // cycle이 생기는 간선은 추가하지 않음
+				
 			cnt++;
 			totalWeight += now.weight;
 		}
@@ -71,14 +67,21 @@ public class Main {
 		return findParents(parent[now]);
 	}
 
-	private static void union(int aRoot,int bRoot) {
-		if(aRoot > bRoot) {
-			int temp = bRoot;
-			bRoot = aRoot;
-			aRoot = temp;
+	private static boolean union(int start,int end) {
+		int startRoot = findParents(start);
+		int endRoot = findParents(end);
+		
+		if(startRoot == endRoot) // cycle이 생기는 간선은 추가하지 않음
+			return false;
+		
+		if(startRoot > endRoot) {  // 부모 노드는 항상 정점번호가 작도록 유지
+			int temp = endRoot;
+			endRoot = startRoot;
+			startRoot = temp;
 		}
 		
-		parent[bRoot] = aRoot;
+		parent[endRoot] = startRoot;  // 간선을 추가하면 병합성공
+		return true;
 	}
 	
 }
