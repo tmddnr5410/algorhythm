@@ -14,7 +14,6 @@ public class Main {
         
         boolean[] isExist = new boolean[1000001];
         int[] nums = new int[N];
-        int[] seq = new int[N];
         int[] score = new int[1000001];
 
         StringTokenizer stk = new StringTokenizer(br.readLine()," ");
@@ -22,12 +21,8 @@ public class Main {
             int n = Integer.parseInt(stk.nextToken());
             isExist[n] = true;
             nums[i] = n;
-            // 들어올 숫자의 자리 저장.
-            seq[i] = n;
         }
 
-        // 들어온 카드를 정렬후 점수 계산
-        Arrays.sort(nums);
 
         // 카드에 적힌 수가 가장 작은 플레이어부터 모든 사람과 대전한다
         // 점수가 작은 플레이어는 다음 모든 플레이어에 대해 이기거나, 무승부이기 때문에 점수가 확정된다
@@ -47,8 +42,8 @@ public class Main {
         }
 
         // 정렬하기 이전의 순서로 점수를 출력하기 위해 sequence 대로 점수를 출력한다.
-        for(int idx:seq)
-            bw.write(score[idx]+" ");
+        for(int player:nums)
+            bw.write(score[player]+" ");
         bw.flush();
         bw.close();
     }
