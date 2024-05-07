@@ -3,23 +3,31 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 
-class Colony {
+class Colony implements Comparable<Colony>{
 	Integer id;
-	Integer x;
-	Integer y;
-	Integer z;
+	Integer p;
 	
-	public Colony(Integer id, Integer x, Integer y, Integer z) {
+
+	public Colony(Integer id, Integer p) {
 		this.id = id;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.p = p;
 	}
-	
-	
+
+
+	@Override
+	public int compareTo(Colony o) {
+		return p.compareTo(o.p);
+	}
+
+
+	@Override
+	public String toString() {
+		return "[id=" + id + ", p=" + p + "]";
+	}
 }
 
 class Edge implements Comparable<Edge>{
@@ -40,99 +48,74 @@ class Edge implements Comparable<Edge>{
 		return weight.compareTo(o.weight);
 	}
 
-
-	@Override
-	public String toString() {
-		return "Edge [start=" + start + ", end=" + end + ", weight=" + weight + "]";
-	}
-
 }
 
 
 
-public class Main {private static int[] parents;
-	private static ArrayList<Colony> colonys;
+public class Main{
+	private static final int X=0,Y=1,Z=2;
 	
+	private static int[] parents;
+	private static ArrayList<Colony>[] colonys;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int N = Integer.parseInt(br.readLine());
 		
-		ArrayList<Edge> edgeList = new ArrayList<>();
+		PriorityQueue<Edge> pQue = new PriorityQueue<>();
 		
-		parents = new int[N];
-
-		colonys = new ArrayList<>();
+		parents = new int[N+1];
+		
+		colonys = new ArrayList[3];
+		colonys[X] = new ArrayList<>();
+		colonys[Y] = new ArrayList<>();
+		colonys[Z] = new ArrayList<>();
 
 		
-		for(int i=0;i<N;i++) {
+		
+		for(int i=1;i<=N;i++) {
 			StringTokenizer stk = new StringTokenizer(br.readLine()," ");
 			int x = Integer.parseInt(stk.nextToken());
 			int y = Integer.parseInt(stk.nextToken());
 			int z = Integer.parseInt(stk.nextToken());
 			
-			colonys.add(new Colony(i, x, y, z));
+			colonys[X].add(new Colony(i, x));
+			colonys[Y].add(new Colony(i, y));
+			colonys[Z].add(new Colony(i, z));
 			parents[i] = i;
 		}
 		
 		
+		int count = 0;
 		long total = 0;
 		
+		for(int i=0;i<3;i++) 
+			Collections.sort(colonys[i]);
+		
 
-		Collections.sort(colonys, (p1,p2)-> p1.x - p2.x);
 		for(int i=0;i<N-1;i++) {
-				Colony start = colonys.get(i);
-				Colony end = colonys.get(i+1);
-
-				int weight = Math.abs(start.x-end.x);
+			for(int c=0;c<3;c++) {
+				Colony start = colonys[c].get(i);
+				Colony end = colonys[c].get(i+1);
 				
-				edgeList.add(new Edge(start.id, end.id, weight));
-			
+				int weight = Math.abs(start.p-end.p);
+				
+				pQue.add(new Edge(start.id, end.id, weight));
+			}
 		}
-
-
 		
-
-		Collections.sort(colonys, (p1,p2)-> p1.y - p2.y);
-		for(int i=0;i<N-1;i++) {
-				Colony start = colonys.get(i);
-				Colony end = colonys.get(i+1);
-				
-				int weight = Math.abs(start.y-end.y);
-				
-				edgeList.add(new Edge(start.id, end.id, weight));
+		while(!pQue.isEmpty()) {
+			// 총 정점갯수 - 1 개 만큼 이었으면 최소 연결 완료
+			if(count == N-1)
+				break;
 			
-		}
-
-
-		
-		
-
-		Collections.sort(colonys, (p1,p2)-> p1.z - p2.z);
-		for(int i=0;i<N-1;i++) {
-				Colony start = colonys.get(i);
-				Colony end = colonys.get(i+1);
-				
-				int weight = Math.abs(start.z-end.z);
-				
-				edgeList.add(new Edge(start.id, end.id, weight));
+			Edge now = pQue.poll();
 			
-		}
-
-
-		
-		
-		Collections.sort(edgeList);
-		
-		
-		for (int i = 0; i < edgeList.size(); i++) {
-//			for(int j=0;j<N;j++) {
-//				System.out.print(j+"의 부모 : "+parents[j]+" | ");
-//			}
-//			System.out.println();
-			Edge now = edgeList.get(i);
+			
 			// 사이클이 생기는 간선은 추가하지 않는다.
 			if(!union(now.start,now.end)) continue;
+			
+			count++;
 			total += now.weight;
 			
 		}
@@ -145,7 +128,6 @@ public class Main {private static int[] parents;
 	public static int findParents(int now) {
 		if(parents[now] == now)
 			return now;
-		
 		return parents[now] = findParents(parents[now]);
 	}
 
@@ -158,8 +140,7 @@ public class Main {private static int[] parents;
 			return false;
 		
 		parents[yParents] = xParents;
-		parents[y] = xParents;
-		
+			
 		return true;
 	}
 	
