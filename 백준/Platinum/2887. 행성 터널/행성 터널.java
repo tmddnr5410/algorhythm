@@ -1,12 +1,27 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.StringTokenizer;
+
+
+class Colony {
+	Integer id;
+	Integer x;
+	Integer y;
+	Integer z;
+	
+	public Colony(Integer id, Integer x, Integer y, Integer z) {
+		this.id = id;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
+	
+}
+
 class Edge implements Comparable<Edge>{
 	Integer start;
 	Integer end;
@@ -33,106 +48,122 @@ class Edge implements Comparable<Edge>{
 
 }
 
-class Point {
-	int num;
-	int x;
-	int y;
-	int z;
-
-	Point(int num, int x, int y, int z) {
-		this.num = num;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-}
-
 
 
 public class Main {
-	static int[] parent;
-	static ArrayList<Edge> edgeList;
-
+	private static final int X=0,Y=1,Z=2;
+	
+	private static int[] parents;
+	private static ArrayList<Colony> colonys;
+	
+	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st;
-
 		int N = Integer.parseInt(br.readLine());
+		
+		ArrayList<Edge> edgeList = new ArrayList<>();
+		
+		parents = new int[N];
 
-		Point[] points = new Point[N];
-		for (int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine());
+		colonys = new ArrayList<>();
 
-			int x = Integer.parseInt(st.nextToken());
-			int y = Integer.parseInt(st.nextToken());
-			int z = Integer.parseInt(st.nextToken());
+		
+		for(int i=0;i<N;i++) {
+			StringTokenizer stk = new StringTokenizer(br.readLine()," ");
+			int x = Integer.parseInt(stk.nextToken());
+			int y = Integer.parseInt(stk.nextToken());
+			int z = Integer.parseInt(stk.nextToken());
+			
+			colonys.add(new Colony(i, x, y, z));
+			parents[i] = i;
+		}
+		
+		
+		long total = 0;
+		
 
-			points[i] = new Point(i, x, y, z);
+		Collections.sort(colonys, (p1,p2)-> p1.x - p2.x);
+		for(int i=0;i<N-1;i++) {
+				Colony start = colonys.get(i);
+				Colony end = colonys.get(i+1);
+
+				int weight = Math.abs(start.x-end.x);
+				
+				edgeList.add(new Edge(start.id, end.id, weight));
+			
 		}
 
-		edgeList = new ArrayList<>();
 
-		// x, y, z 각각에 대해서 정렬하고 각 행성의 번호와 비용을 edgeList에 추가.
-		Arrays.sort(points, (p1, p2) -> p1.x - p2.x);
-		for (int i = 0; i < N - 1; i++) {
-			int weight = Math.abs(points[i].x - points[i + 1].x);
+		
 
-			edgeList.add(new Edge(points[i].num, points[i + 1].num, weight));
+		Collections.sort(colonys, (p1,p2)-> p1.y - p2.y);
+		for(int i=0;i<N-1;i++) {
+				Colony start = colonys.get(i);
+				Colony end = colonys.get(i+1);
+				
+				int weight = Math.abs(start.y-end.y);
+				
+				edgeList.add(new Edge(start.id, end.id, weight));
+			
 		}
 
-		Arrays.sort(points, (p1, p2) -> p1.y - p2.y);
-		for (int i = 0; i < N - 1; i++) {
-			int weight = Math.abs(points[i].y - points[i + 1].y);
 
-			edgeList.add(new Edge(points[i].num, points[i + 1].num, weight));
+		
+		
+
+		Collections.sort(colonys, (p1,p2)-> p1.z - p2.z);
+		for(int i=0;i<N-1;i++) {
+				Colony start = colonys.get(i);
+				Colony end = colonys.get(i+1);
+				
+				int weight = Math.abs(start.z-end.z);
+				
+				edgeList.add(new Edge(start.id, end.id, weight));
+			
 		}
 
-		Arrays.sort(points, (p1, p2) -> p1.z - p2.z);
-		for (int i = 0; i < N - 1; i++) {
-			int weight = Math.abs(points[i].z - points[i + 1].z);
 
-			edgeList.add(new Edge(points[i].num, points[i + 1].num, weight));
-		}
-
-		parent = new int[N];
-		for (int i = 0; i < N; i++) {
-			parent[i] = i;
-		}
-
+		
+		
 		Collections.sort(edgeList);
-
-		int ans = 0;
+		
+		
 		for (int i = 0; i < edgeList.size(); i++) {
-			Edge edge = edgeList.get(i);
-			// 사이클이 발생하는 간선은 제외.
-			if (find(edge.start) != find(edge.end)) {
-				ans += edge.weight;
-				union(edge.start, edge.end);
-			}
+//			for(int j=0;j<N;j++) {
+//				System.out.print(j+"의 부모 : "+parents[j]+" | ");
+//			}
+//			System.out.println();
+			Edge now = edgeList.get(i);
+			// 사이클이 생기는 간선은 추가하지 않는다.
+			if(!union(findParents(now.start),findParents(now.end))) continue;
+			total += now.weight;
+			
 		}
-
-		bw.write(ans + "\n");
-		bw.flush();
-		bw.close();
-		br.close();
+		
+		
+		System.out.println(total);
+	}
+	
+	// 부모 배열을 탐색해 어떤 정점의 부모를 탐색
+	public static int findParents(int now) {
+		if(parents[now] == now)
+			return now;
+		
+		return parents[now] = findParents(parents[now]);
 	}
 
-	public static int find(int x) {
-		if (x == parent[x]) {
-			return x;
-		}
-
-		return parent[x] = find(parent[x]);
+	// 현재 간선을 이을수 있다면 true
+	public static boolean union(int x,int y) {
+		int xParents = findParents(x);
+		int yParents = findParents(y);
+		
+		if(xParents == yParents)
+			return false;
+		
+		parents[y] = xParents;
+		
+		return true;
 	}
-
-	public static void union(int x, int y) {
-		x = find(x);
-		y = find(y);
-
-		if (x != y) {
-			parent[y] = x;
-		}
-	}
-
+	
+	
 }
