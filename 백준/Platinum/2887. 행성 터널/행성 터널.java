@@ -50,10 +50,7 @@ class Edge implements Comparable<Edge>{
 
 
 
-public class Main {
-	private static final int X=0,Y=1,Z=2;
-	
-	private static int[] parents;
+public class Main {private static int[] parents;
 	private static ArrayList<Colony> colonys;
 	
 	
@@ -135,7 +132,7 @@ public class Main {
 //			System.out.println();
 			Edge now = edgeList.get(i);
 			// 사이클이 생기는 간선은 추가하지 않는다.
-			if(!union(findParents(now.start),findParents(now.end))) continue;
+			if(!union(now.start,now.end)) continue;
 			total += now.weight;
 			
 		}
@@ -160,6 +157,7 @@ public class Main {
 		if(xParents == yParents)
 			return false;
 		
+		parents[yParents] = xParents;
 		parents[y] = xParents;
 		
 		return true;
