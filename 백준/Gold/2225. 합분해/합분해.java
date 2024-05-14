@@ -16,21 +16,16 @@ public class Main {
 
         // 모든 수는 1가지 방법으로 자신을 표현 가능
         // 또한 i+1 가지 방법으로 자신을 표현 가능
-        for(int i=0;i<=N;i++) {
+        for(int i=0;i<=N;i++) 
             DP[i][1] = 1;
-            //
-            // DP[i][2] = i+1;
-        }
+        
 
         // i번 숫자를 j개로 만드는 방법 : m~i 까지를 j-1개로 만드는 모든 경우의 수를 더한다
-        for(int i=0;i<=N;i++){
-            for(int j=2;j<=K;j++){
-                for(int m=0;m<=i;m++){
+        for(int i=0;i<=N;i++)
+            for(int j=2;j<=K;j++)
+                for(int m=0;m<=i;m++)
                     DP[i][j] = (DP[i][j] + DP[m][j-1])%1000000000;
-                }
-            }
-        }
-
+        
         System.out.println(DP[N][K]);
     }
 }
